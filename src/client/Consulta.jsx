@@ -12,15 +12,21 @@ function Consulta({ usuario }) {
   const calcularEstado = (fecha) => {
     if (!fecha) return null;
 
-    const [dia, mes, anioStr] = fecha.split("/");
-    const anio = parseInt(
-      anioStr.length === 2
-        ? parseInt(anioStr) < 50
-          ? "20" + anioStr
-          : "19" + anioStr
-        : anioStr
-    );
-    const fechaPago = new Date(anio, parseInt(mes) - 1, parseInt(dia));
+    const [diaStr, mesStr, anioStr] = fecha.split("/");
+    const dia = parseInt(diaStr);
+    const mes = parseInt(mesStr) - 1;
+
+    let anio;
+    if (anioStr.length === 2) {
+      const anioNum = parseInt(anioStr);
+      anio = anioNum < 50 ? 2000 + anioNum : 1900 + anioNum;
+    } else {
+      anio = parseInt(anioStr);
+    }
+
+    const fechaPago = new Date(anio, mes, dia);
+    if (isNaN(fechaPago.getTime())) return null;
+
     const fechaVencimiento = new Date(fechaPago);
     fechaVencimiento.setDate(fechaPago.getDate() + 30);
 
