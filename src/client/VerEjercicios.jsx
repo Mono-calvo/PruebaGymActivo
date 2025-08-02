@@ -166,20 +166,29 @@ function VerEjercicios() {
                   gap: "1rem",
                 }}
               >
-                {/* Embed desde URL */}
-                <iframe
-                  src={videoSeleccionado}
-                  title="Video del ejercicio"
-                  allowFullScreen
-                  style={{
-                    width: "100%",
-                    maxWidth: "640px",
-                    height: "360px",
-                    border: "none",
-                    borderRadius: "5px",
-                  }}
-                ></iframe>
-
+                {isYouTubeUrl(videoSeleccionado) ? (
+                  <iframe
+                    width="360"
+                    height="215"
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(
+                      videoSeleccionado
+                    )}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Video de ejercicio"
+                  />
+                ) : (
+                  <video
+                    src={videoSeleccionado}
+                    controls
+                    style={{
+                      width: "360px",
+                      maxWidth: "100%",
+                      borderRadius: "5px",
+                    }}
+                  />
+                )}
                 <button
                   onClick={() => setVideoSeleccionado(null)}
                   style={styles.botonRojo}
