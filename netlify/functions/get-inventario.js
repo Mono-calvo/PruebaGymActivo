@@ -7,9 +7,9 @@ export default async (req) => {
 
   try {
     const sql = neon();
-    const inventario = await sql`SELECT * FROM inventario;`;
+    const { rows } = await sql`SELECT * FROM inventario;`;
 
-    const textoPlano = inventario.rows
+    const textoPlano = rows
       .map(
         ({ nombre, cantidad, descripcion }) =>
           `${nombre}|${cantidad}|${descripcion || ""}`
