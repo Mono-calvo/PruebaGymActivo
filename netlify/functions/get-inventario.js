@@ -9,7 +9,7 @@ export default async (req) => {
     const sql = neon();
     const inventario = await sql`SELECT * FROM inventario;`;
 
-    return new Response(JSON.stringify(inventario), {
+    return new Response(JSON.stringify(inventario.rows), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
