@@ -1,13 +1,19 @@
 import { neon } from "@netlify/neon";
 
+const sql = neon();
+
 export default async (req) => {
   if (req.method !== "GET") {
     return new Response("Método no permitido", { status: 405 });
   }
 
   try {
-    const sql = neon();
-    const { rows } = await sql`SELECT * FROM inventario;`;
+    // Ejecutar consulta y desestructurar `rows` directamente
+    const result =
+      await sql`SELECT nombre, cantidad, descripcion FROM inventario;`;
+
+    // Si `result` es un array directamente, úsalo tal cual
+    const rows = Array.isArray(result) ? result : result.rows;
 
     const textoPlano = rows
       .map(
