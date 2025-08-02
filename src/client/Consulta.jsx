@@ -5,9 +5,18 @@ function Consulta({ usuario }) {
 
   useEffect(() => {
     if (usuario && usuario.fechaultimopago) {
-      setEstadoInfo(calcularEstado(usuario.fechaultimopago));
+      const fechaFormateada = formatearFechaISOaCorta(usuario.fechaultimopago);
+      setEstadoInfo(calcularEstado(fechaFormateada));
     }
   }, [usuario]);
+
+  // Formatea de "2025-04-04" a "04/04/25"
+  function formatearFechaISOaCorta(isoDate) {
+    if (!isoDate.includes("-")) return isoDate;
+    const [anio, mes, dia] = isoDate.split("-");
+    const anioCorto = anio.slice(-2);
+    return `${dia}/${mes}/${anioCorto}`;
+  }
 
   const calcularEstado = (fecha) => {
     if (!fecha) return null;
@@ -91,7 +100,9 @@ function Consulta({ usuario }) {
       <div style={styles.row}>
         <span style={styles.label}>Último pago:</span>
         <span style={styles.value}>
-          {usuario.fechaultimopago || "No disponible"}
+          {usuario.fechaultimopago
+            ? formatearFechaISOaCorta(usuario.fechaultimopago)
+            : "No disponible"}
         </span>
       </div>
 
