@@ -13,7 +13,7 @@ function AdministracionEjercicios() {
   });
   const [videoSeleccionado, setVideoSeleccionado] = useState(null);
 
-  // Efecto para bloquear el scroll del body cuando se muestra un modal
+  // Efecto para bloquear el scroll del body cuando se muestra un modal o video
   useEffect(() => {
     document.body.style.overflow =
       mostrarModal || videoSeleccionado ? "hidden" : "auto";
@@ -56,7 +56,6 @@ function AdministracionEjercicios() {
       return;
     }
 
-    // Enviar JSON en vez de FormData
     fetch("/.netlify/functions/update-ejercicio", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -131,6 +130,18 @@ function AdministracionEjercicios() {
   useEffect(() => {
     cargarEjercicios();
   }, []);
+
+  // Funciones auxiliares para detectar YouTube y extraer ID
+  function isYouTubeUrl(url) {
+    return url.includes("youtube.com") || url.includes("youtu.be");
+  }
+
+  function extractYouTubeId(url) {
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  }
 
   return (
     <div style={styles.container}>
@@ -268,15 +279,29 @@ function AdministracionEjercicios() {
                 gap: "1rem",
               }}
             >
-              <video
-                src={videoSeleccionado}
-                controls
-                style={{
-                  width: "360px",
-                  maxWidth: "100%",
-                  borderRadius: "5px",
-                }}
-              />
+              {isYouTubeUrl(videoSeleccionado) ? (
+                <iframe
+                  width="360"
+                  height="215"
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(
+                    videoSeleccionado
+                  )}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="Video de ejercicio"
+                />
+              ) : (
+                <video
+                  src={videoSeleccionado}
+                  controls
+                  style={{
+                    width: "360px",
+                    maxWidth: "100%",
+                    borderRadius: "5px",
+                  }}
+                />
+              )}
               <button
                 onClick={() => setVideoSeleccionado(null)}
                 style={styles.botonRojo}
