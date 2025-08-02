@@ -6,7 +6,7 @@ export default async (req) => {
   }
 
   try {
-    const { nombre, zona, archivo } = await req.json(); // archivo aquí es URL
+    const { nombre, zona, archivo } = await req.json();
 
     if (!nombre || !zona || !archivo) {
       return new Response("Faltan campos", { status: 400 });

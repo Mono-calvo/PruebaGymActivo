@@ -7,18 +7,14 @@ export default async (req) => {
 
   try {
     const sql = neon();
-    const result =
-      await sql`SELECT nombre, grupo, descripcion FROM ejercicios;`;
+    // Cambié grupo por zona, y descripcion por archivo, que son las columnas correctas
+    const result = await sql`SELECT nombre, zona, archivo FROM ejercicios;`;
 
-    // Asegura compatibilidad con diferentes retornos (array o objeto con rows)
     const rows = Array.isArray(result) ? result : result.rows;
 
-    // Devuelve como texto plano con separadores "|"
+    // Genera texto plano con separadores "|"
     const textoPlano = rows
-      .map(
-        ({ nombre, grupo, descripcion }) =>
-          `${nombre}|${grupo}|${descripcion || ""}`
-      )
+      .map(({ nombre, zona, archivo }) => `${nombre}|${zona}|${archivo || ""}`)
       .join("\n");
 
     return new Response(textoPlano, {
