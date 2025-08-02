@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 function VerEjercicios() {
-  // Estados principales
   const [ejercicios, setEjercicios] = useState([]);
   const [filtroTexto, setFiltroTexto] = useState("");
   const [zonaSeleccionada, setZonaSeleccionada] = useState("");
@@ -9,7 +8,6 @@ function VerEjercicios() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar ejercicios desde el backend
   const cargarEjercicios = async () => {
     setLoading(true);
     setError(null);
@@ -34,10 +32,8 @@ function VerEjercicios() {
     }
   };
 
-  // Filtrar y ordenar zonas únicas para el filtro lateral
   const zonasUnicas = [...new Set(ejercicios.map((e) => e.zona))].sort();
 
-  // Filtrado de ejercicios según texto y zona seleccionada
   const ejerciciosFiltrados = ejercicios.filter((e) => {
     const texto = filtroTexto.toLowerCase();
     const coincideTexto =
@@ -46,7 +42,6 @@ function VerEjercicios() {
     return coincideTexto && coincideZona;
   });
 
-  // Cerrar modal de video con tecla ESC
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") {
@@ -57,15 +52,25 @@ function VerEjercicios() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  // Carga los ejercicios cuando el componente monta
   useEffect(() => {
     document.body.style.overflow = "hidden";
     cargarEjercicios();
   }, []);
 
+  // === FUNCIONES PARA YOUTUBE ===
+  function isYouTubeUrl(url) {
+    return /(?:youtube\.com\/watch\?v=|youtu\.be\/)/.test(url);
+  }
+
+  function extractYouTubeId(url) {
+    const match = url.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    return match ? match[1] : null;
+  }
+
   return (
     <div style={styles.page}>
-      {/* Sidebar con filtro por zona */}
       <div style={styles.sidebar}>
         <h3 style={{ textAlign: "center" }}>Filtrar por zona</h3>
         <button
@@ -89,11 +94,8 @@ function VerEjercicios() {
         ))}
       </div>
 
-      {/* Contenedor principal */}
       <div style={styles.container}>
         <h2 style={styles.title}>Bienvenido/a - Rutina de Ejercicios</h2>
-
-        {/* Campo de búsqueda */}
         <div>
           <p>Búsqueda por nombre o zona:</p>
           <input
@@ -105,13 +107,11 @@ function VerEjercicios() {
           />
         </div>
 
-        {/* Mensajes de error o loading */}
         {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
         {loading && (
           <p style={{ textAlign: "center" }}>Cargando ejercicios...</p>
         )}
 
-        {/* Tabla de ejercicios */}
         {!loading && (
           <div style={styles.tabla}>
             <div style={styles.encabezado}>
@@ -150,7 +150,7 @@ function VerEjercicios() {
           </div>
         )}
 
-        {/* Modal para reproducir video */}
+        {/* Modal de video */}
         {videoSeleccionado && (
           <div
             style={styles.modalOverlay}
@@ -168,27 +168,32 @@ function VerEjercicios() {
               >
                 {isYouTubeUrl(videoSeleccionado) ? (
                   <iframe
-                    width="360"
-                    height="215"
                     src={`https://www.youtube.com/embed/${extractYouTubeId(
                       videoSeleccionado
                     )}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    title="Video del ejercicio"
                     allowFullScreen
-                    title="Video de ejercicio"
+                    style={{
+                      width: "100%",
+                      maxWidth: "640px",
+                      height: "360px",
+                      border: "none",
+                      borderRadius: "5px",
+                    }}
                   />
                 ) : (
                   <video
                     src={videoSeleccionado}
                     controls
                     style={{
-                      width: "360px",
-                      maxWidth: "100%",
+                      width: "100%",
+                      maxWidth: "640px",
+                      height: "360px",
                       borderRadius: "5px",
                     }}
                   />
                 )}
+
                 <button
                   onClick={() => setVideoSeleccionado(null)}
                   style={styles.botonRojo}
@@ -236,10 +241,6 @@ const styles = {
     cursor: "pointer",
     textAlign: "left",
     fontSize: "1rem",
-    transition: "background-color 0.3s",
-    ":hover": {
-      backgroundColor: "#333",
-    },
   },
   container: {
     flex: 1,
@@ -283,7 +284,6 @@ const styles = {
     borderBottom: "1px solid #444",
     alignItems: "center",
     textAlign: "center",
-    transition: "background-color 0.2s",
   },
   fileButton: {
     color: "#6c75d8",
