@@ -6,9 +6,9 @@ export default async (req) => {
   }
 
   try {
-    const { nombre, zona, archivo } = await req.json();
+    const { nombre, zona, linkvideo } = await req.json();
 
-    if (!nombre || !zona || !archivo) {
+    if (!nombre || !zona || !linkvideo) {
       return new Response("Faltan campos", { status: 400 });
     }
 
@@ -16,7 +16,7 @@ export default async (req) => {
 
     await sql`
       INSERT INTO ejercicios (nombre, zona, archivo)
-      VALUES (${nombre}, ${zona}, ${archivo});
+      VALUES (${nombre}, ${zona}, ${linkvideo});
     `;
 
     return new Response("Ejercicio guardado correctamente", { status: 201 });
