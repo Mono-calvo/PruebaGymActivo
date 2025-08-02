@@ -36,10 +36,17 @@ function Inventario() {
   };
 
   const guardarCambios = () => {
+    const { nombreOriginal, nombre, cantidad, tipo } = productoSeleccionado;
+
     fetch("/.netlify/functions/update-inventario", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productoSeleccionado),
+      body: JSON.stringify({
+        nombreOriginal,
+        nombre,
+        cantidad,
+        descripcion: tipo || "",
+      }),
     })
       .then((res) => res.text())
       .then(() => {
