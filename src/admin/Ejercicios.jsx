@@ -9,7 +9,7 @@ function AdministracionEjercicios() {
   const [nuevoEjercicio, setNuevoEjercicio] = useState({
     nombre: "",
     zona: "",
-    archivo: null,
+    archivo: "",
   });
   const inputArchivoRef = useRef(null);
   const [videoSeleccionado, setVideoSeleccionado] = useState(null);
@@ -324,13 +324,15 @@ function AdministracionEjercicios() {
           style={styles.input}
         />
         <input
-          type="file"
-          ref={inputArchivoRef}
+          type="text"
+          placeholder="URL del video"
+          value={nuevoEjercicio.archivo}
           onChange={(e) =>
-            setNuevoEjercicio({ ...nuevoEjercicio, archivo: e.target.files[0] })
+            setNuevoEjercicio({ ...nuevoEjercicio, archivo: e.target.value })
           }
-          style={styles.input_archivo}
+          style={styles.input}
         />
+
         <button onClick={agregarEjercicio} style={styles.botonAgregar}>
           Agregar
         </button>

@@ -6,31 +6,27 @@ export default async (req) => {
   }
 
   try {
-    const { nombre, zona, archivo } = await req.json();
+    const { nombre, zona, archivo } = await req.json(); // archivo aquí es URL
 
-    if (!nombre || !zona) {
+    if (!nombre || !zona || !archivo) {
       return new Response("Faltan campos", { status: 400 });
     }
 
     const sql = neon();
 
-    try {
-      await sql`
-        INSERT INTO ejercicios (nombre, zona, archivo)
-        VALUES (${nombre}, ${zona}, ${archivo || ""});
-      `;
-    } catch (err) {
-      console.error(err); // <--- revisa el log
-      if (err.message.includes("duplicate key")) {
-        return new Response("Ya existe un ejercicio con ese nombre", {
-          status: 409,
-        });
-      }
-      throw err;
-    }
+    await sql`
+      INSERT INTO ejercicios (nombre, zona, archivo)
+      VALUES (${nombre}, ${zona}, ${archivo});
+    `;
 
     return new Response("Ejercicio guardado correctamente", { status: 201 });
   } catch (err) {
+    if (err.message.includes("duplicate key")) {
+      return new Response("Ya existe un ejercicio con ese nombre", {
+        status: 409,
+      });
+    }
+
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
