@@ -9,9 +9,16 @@ export default async (req) => {
     const sql = neon();
     const inventario = await sql`SELECT * FROM inventario;`;
 
-    return new Response(JSON.stringify(inventario.rows), {
+    const textoPlano = inventario.rows
+      .map(
+        ({ nombre, cantidad, descripcion }) =>
+          `${nombre}|${cantidad}|${descripcion || ""}`
+      )
+      .join("\n");
+
+    return new Response(textoPlano, {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
