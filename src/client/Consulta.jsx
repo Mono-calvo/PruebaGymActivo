@@ -12,8 +12,15 @@ function Consulta({ usuario }) {
   const calcularEstado = (fecha) => {
     if (!fecha) return null;
 
-    const [dia, mes, anio] = fecha.split("/").map((v) => parseInt(v));
-    const fechaPago = new Date(2000 + anio, mes - 1, dia);
+    const [dia, mes, anioStr] = fecha.split("/");
+    const anio = parseInt(
+      anioStr.length === 2
+        ? parseInt(anioStr) < 50
+          ? "20" + anioStr
+          : "19" + anioStr
+        : anioStr
+    );
+    const fechaPago = new Date(anio, parseInt(mes) - 1, parseInt(dia));
     const fechaVencimiento = new Date(fechaPago);
     fechaVencimiento.setDate(fechaPago.getDate() + 30);
 
