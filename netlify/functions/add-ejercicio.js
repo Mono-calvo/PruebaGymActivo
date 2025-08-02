@@ -14,10 +14,19 @@ export default async (req) => {
 
     const sql = neon();
 
-    await sql`
-      INSERT INTO ejercicios (nombre, zona, archivo)
-      VALUES (${nombre}, ${zona}, ${archivo});
-    `;
+    try {
+      await sql`
+        INSERT INTO ejercicios (nombre, zona, archivo)
+        VALUES (${nombre}, ${zona}, ${archivo});
+      `;
+    } catch (err) {
+      if (err.message.includes("duplicate key")) {
+        return new Response("Ya existe un ejercicio con ese nombre", {
+          status: 409,
+        });
+      }
+      throw err;
+    }
 
     return new Response("Ejercicio guardado correctamente", { status: 201 });
   } catch (err) {

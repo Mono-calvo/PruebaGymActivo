@@ -8,16 +8,16 @@ export default async (req) => {
   try {
     const { nombreOriginal, nombre, cantidad, descripcion } = await req.json();
 
-    if (!nombreOriginal || !nombre || !cantidad) {
+    if (!nombreOriginal || !nombre || cantidad === undefined) {
       return new Response("Faltan campos", { status: 400 });
     }
 
     const sql = neon();
+    const nuevaDescripcion = descripcion ?? "";
+
     await sql`
       UPDATE inventario
-      SET nombre = ${nombre}, cantidad = ${cantidad}, descripcion = ${
-      descripcion || ""
-    }
+      SET nombre = ${nombre}, cantidad = ${cantidad}, descripcion = ${nuevaDescripcion}
       WHERE nombre = ${nombreOriginal};
     `;
 
