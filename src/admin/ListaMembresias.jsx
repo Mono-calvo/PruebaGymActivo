@@ -41,7 +41,7 @@ function ListaMembresia() {
   };
 
   const cargarClientes = () => {
-    fetch("http://localhost:3000/clientes")
+    fetch("/.netlify/functions/get-clientes")
       .then((res) => res.text())
       .then((data) => {
         const arr = data
@@ -107,7 +107,7 @@ function ListaMembresia() {
       return;
     }
 
-    fetch("http://localhost:3000/clientes/actualizar", {
+    fetch("/.netlify/functions/update-cliente", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -140,7 +140,7 @@ function ListaMembresia() {
   const confirmarEliminar = () => {
     if (!clienteEliminar) return;
 
-    fetch("http://localhost:3000/clientes/eliminar", {
+    fetch("/.netlify/functions/delete-cliente", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(clienteEliminar),
