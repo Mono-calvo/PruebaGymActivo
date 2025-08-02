@@ -42,18 +42,20 @@ function ListaMembresia() {
 
   const cargarClientes = () => {
     fetch("/.netlify/functions/get-clientes")
-      .then((res) => res.text())
-      .then((data) => {
-        const arr = data
-          .split("\n")
-          .filter((line) => line.trim() !== "")
-          .map((line) => {
-            const [nombre, apellido, rut, correo, ultimoPago] = line.split("|");
-            return { nombre, apellido, rut, correo, ultimoPago };
-          });
-        setClientes(arr);
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al cargar clientes");
+        return res.json();
       })
-      .catch((err) => console.error("Error al obtener clientes:", err));
+      .then((data) => {
+        const clientesConUltimoPago = data.map((cliente) => ({
+          ...cliente,
+          ultimoPago: cliente.fechaultimopago || "01/01/25", // fallback si viene nulo
+        }));
+        setClientes(clientesConUltimoPago);
+      })
+      .catch((err) => {
+        console.error("Error al obtener clientes:", err);
+      });
   };
 
   const abrirModalEditar = (cliente) => {
