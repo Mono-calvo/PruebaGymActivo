@@ -2,38 +2,33 @@ import { neon } from "@netlify/neon";
 
 const sql = neon();
 
-export default async function handler(event, context) {
+export default async function handler(req) {
+  if (req.method !== "POST") {
+    return new Response("Método no permitido", { status: 405 });
+  }
   try {
-    const { rut, password } = JSON.parse(event.body);
-
-    if (!rut || !password) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Faltan rut o contraseña" }),
-      };
-    }
+    const { rut, password } = await req.json();
 
     const [user] = await sql`
       SELECT rol, nombre, apellido, rut, correo, fechaultimopago, fechavencimiento
       FROM clientes
-      WHERE rut = ${rut} AND contrasena = ${password};
+      WHERE rut = ${rut} AND contrasena = ${password}
     `;
 
     if (!user) {
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ error: "Usuario o contraseña incorrectos" }),
-      };
+      return new Response(
+        JSON.stringify({ error: "Usuario o contraseña incorrectos" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(user),
-    };
+    return new Response(JSON.stringify(user), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
