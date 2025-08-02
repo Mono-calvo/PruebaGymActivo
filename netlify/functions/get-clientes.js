@@ -14,7 +14,8 @@ export default async (req, context) => {
   try {
     const clientesRaw = await sql`
       SELECT id, rol, nombre, apellido, rut, correo, fechaultimopago, fechavencimiento
-      FROM clientes;
+      FROM clientes
+      WHERE rol = 'cliente';
     `;
 
     // Formatear fechas para cada cliente
