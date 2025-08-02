@@ -118,7 +118,7 @@ function NuevoClienteForm() {
     }|${getFechaHoy()}|${getFechaVencimiento()}`;
 
     try {
-      const response = await fetch("http://localhost:3000/clientes", {
+      const response = await fetch("/.netlify/functions/add-cliente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: clienteString }),
