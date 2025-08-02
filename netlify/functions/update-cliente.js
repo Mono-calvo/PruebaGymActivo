@@ -1,7 +1,23 @@
 import { neon } from "@netlify/neon";
 
+function formatearFechaPostgres(fechaStr) {
+  if (!fechaStr) return null;
+  // fechaStr en formato "dd/mm/yy"
+  const partes = fechaStr.split("/");
+  if (partes.length !== 3) return null;
+
+  let [dia, mes, anio] = partes.map(Number);
+  if (anio < 100) anio += 2000; // Asumir siglo 2000+
+
+  // Formato "yyyy-mm-dd"
+  return `${anio}-${String(mes).padStart(2, "0")}-${String(dia).padStart(
+    2,
+    "0"
+  )}`;
+}
+
 export default async (req) => {
-  if (req.method !== "PUT" && req.method !== "POST") {
+  if (req.method !== "PUT") {
     return new Response("Método no permitido", { status: 405 });
   }
 
@@ -18,70 +34,26 @@ export default async (req) => {
       fechavencimiento,
     } = body;
 
-    if (!correoOriginal) {
-      return new Response(
-        JSON.stringify({
-          error: "Falta correoOriginal para identificar cliente.",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
     const sql = neon();
 
-    // 1. Verificar si rut está duplicado (excluyendo el cliente original)
-    const duplicadoRut = await sql`
-      SELECT COUNT(*)::int AS count FROM clientes
-      WHERE rut = ${rut} AND correo != ${correoOriginal};
-    `;
-    if (duplicadoRut[0].count > 0) {
-      return new Response(
-        JSON.stringify({ error: "Ya existe un cliente con ese RUT." }),
-        { status: 409, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    const fechaultimopagoSQL = formatearFechaPostgres(fechaultimopago);
+    const fechavencimientoSQL = formatearFechaPostgres(fechavencimiento);
 
-    // 2. Verificar si correo está duplicado (excluyendo el cliente original)
-    const duplicadoCorreo = await sql`
-      SELECT COUNT(*)::int AS count FROM clientes
-      WHERE correo = ${correo} AND correo != ${correoOriginal};
-    `;
-    if (duplicadoCorreo[0].count > 0) {
-      return new Response(
-        JSON.stringify({ error: "Ya existe un cliente con ese correo." }),
-        { status: 409, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // 3. Actualizar cliente según correoOriginal
-    const result = await sql`
+    await sql`
       UPDATE clientes SET
         nombre = ${nombre},
         apellido = ${apellido},
         rut = ${rut},
         correo = ${correo},
-        fechaultimopago = ${fechaultimopago},
-        fechavencimiento = ${fechavencimiento}
-      WHERE correo = ${correoOriginal}
-      RETURNING id;
+        fechaultimopago = ${fechaultimopagoSQL},
+        fechavencimiento = ${fechavencimientoSQL}
+      WHERE correo = ${correoOriginal};
     `;
 
-    if (result.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Cliente original no encontrado." }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        mensaje: "Cliente actualizado correctamente.",
-      }),
-      { headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Error update-cliente:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
