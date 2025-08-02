@@ -8,7 +8,7 @@ export default async (req) => {
   try {
     const { nombre, zona, archivo } = await req.json();
 
-    if (!nombre || !zona || !archivo) {
+    if (!nombre || !zona) {
       return new Response("Faltan campos", { status: 400 });
     }
 
@@ -17,9 +17,10 @@ export default async (req) => {
     try {
       await sql`
         INSERT INTO ejercicios (nombre, zona, archivo)
-        VALUES (${nombre}, ${zona}, ${archivo});
+        VALUES (${nombre}, ${zona}, ${archivo || ""});
       `;
     } catch (err) {
+      console.error(err); // <--- revisa el log
       if (err.message.includes("duplicate key")) {
         return new Response("Ya existe un ejercicio con ese nombre", {
           status: 409,
