@@ -14,7 +14,7 @@ function VerEjercicios() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:3000/ejercicios");
+      const res = await fetch("/.netlify/functions/get-ejercicio");
       if (!res.ok)
         throw new Error("No se pudo cargar el archivo de ejercicios");
       const data = await res.text();
@@ -166,15 +166,20 @@ function VerEjercicios() {
                   gap: "1rem",
                 }}
               >
-                <video
-                  src={`http://localhost:3000/${videoSeleccionado}`}
-                  controls
+                {/* Embed desde URL */}
+                <iframe
+                  src={videoSeleccionado}
+                  title="Video del ejercicio"
+                  allowFullScreen
                   style={{
-                    width: "360px",
-                    maxWidth: "100%",
+                    width: "100%",
+                    maxWidth: "640px",
+                    height: "360px",
+                    border: "none",
                     borderRadius: "5px",
                   }}
-                />
+                ></iframe>
+
                 <button
                   onClick={() => setVideoSeleccionado(null)}
                   style={styles.botonRojo}

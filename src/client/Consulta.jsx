@@ -12,10 +12,13 @@ function Consulta({ usuario }) {
 
   // Formatea de "2025-04-04" a "04/04/25"
   function formatearFechaISOaCorta(isoDate) {
-    if (!isoDate.includes("-")) return isoDate;
-    const [anio, mes, dia] = isoDate.split("-");
+    if (!isoDate) return "";
+
+    // Extrae solo la parte de la fecha, sin hora
+    const soloFecha = isoDate.split("T")[0]; // "2025-08-02"
+    const [anio, mes, dia] = soloFecha.split("-");
     const anioCorto = anio.slice(-2);
-    return `${dia}/${mes}/${anioCorto}`;
+    return `${dia}/${mes}/${anioCorto}`; // "02/08/25"
   }
 
   const calcularEstado = (fecha) => {
