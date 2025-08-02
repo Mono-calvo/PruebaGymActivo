@@ -12,7 +12,7 @@ function Inventario() {
   });
 
   const cargarInventario = () => {
-    fetch("http://localhost:3000/inventario")
+    fetch("/.netlify/functions/get-inventario")
       .then((res) => res.text())
       .then((data) => {
         const arr = data
@@ -36,7 +36,7 @@ function Inventario() {
   };
 
   const guardarCambios = () => {
-    fetch("http://localhost:3000/inventario/actualizar", {
+    fetch("/.netlify/functions/update-inventario", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(productoSeleccionado),
@@ -55,7 +55,7 @@ function Inventario() {
   const eliminarProducto = (nombre) => {
     if (!window.confirm(`¿Eliminar producto ${nombre}?`)) return;
 
-    fetch("http://localhost:3000/inventario/eliminar", {
+    fetch("/.netlify/functions/delete-inventario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),
@@ -77,7 +77,7 @@ function Inventario() {
       return;
     }
 
-    fetch("http://localhost:3000/inventario", {
+    fetch("/.netlify/functions/add-inventario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, cantidad, descripcion: tipo }),
